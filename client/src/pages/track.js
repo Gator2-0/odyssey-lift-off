@@ -1,9 +1,11 @@
-import React  from "react";
+import React from 'react';
+import { useQuery, gql } from '@apollo/client';
+import { useParams } from 'react-router-dom';
 import { Layout, QueryResult } from '../components';
-import { useQuery, gql} from '@apollo/client';
-import { useParams } from "react-router-dom";
+import TrackDetail from '../components/track-detail';
 
-export const GET_TRACK = gql`
+/** GET_TRACK gql query to retrieve a specific track by its ID */
+const GET_TRACK = gql`
   query getTrack($trackId: ID!) {
     track(id: $trackId) {
       id
@@ -16,20 +18,34 @@ export const GET_TRACK = gql`
       thumbnail
       length
       modulesCount
-      description
       numberOfViews
       modules {
         id
         title
         length
       }
+      description
     }
   }
 `;
 
-const Track = ()=>{
+/**
+ * Track Page fetches a track's data from the gql query GET_TRACK
+ * and provides it to the TrackDetail component to display
+ */
+const Track = () => {
   const { trackId = "" } = useParams();
-  return <Layout></Layout>;
-}
+  const { loading, error, data } = useQuery(GET_TRACK, {
+    variables: { trackId },
+  });
 
-export default Track
+  return (
+    <Layout>
+      <QueryResult error={error} loading={loading} data={data}>
+        <TrackDetail track={data?.track} />
+      </QueryResult>
+    </Layout>
+  );
+};
+
+export default Track;
