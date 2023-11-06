@@ -25,7 +25,7 @@ const resolvers = {
       } catch (err) {
         return {
           code: err.extensions.response.status,
-          succes: false,
+          success: false,
           message: err.extensions.response.body,
           track: null
         };
